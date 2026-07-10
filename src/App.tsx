@@ -5,7 +5,10 @@ import Header from './components/Header'
 import Sidebar from './components/Sidebar'
 import ConnectionModal from './components/ConnectionModal'
 import ConfirmDialog from './components/ConfirmDialog'
+import LoginPage from './components/LoginPage'
 import { checkQuerySafety } from './utils/safeQuery'
+import { api } from './utils/api'
+import { isAuthenticated, clearToken } from './utils/auth'
 import type { Connection, ConnectionFormData, TableInfo, ColumnInfo, QueryHistoryItem } from './types'
 
 interface QueryResult {
@@ -16,6 +19,19 @@ interface QueryResult {
 }
 
 function App() {
+  // Auth state
+  const [authenticated, setAuthenticated] = useState(() => isAuthenticated())
+
+  // Listen for unauthorized events (e.g. expired/invalid token)
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      clearToken()
+      setAuthenticated(false)
+    }
+    window.addEventListener('auth:unauthorized', handleUnauthorized)
+    return () => window.removeEventListener('auth:unauthorized', handleUnauthorized)
+  }, [])
+
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<QueryResult | null>(null)
   const [loading, setLoading] = useState(false)
@@ -50,8 +66,7 @@ function App() {
   // Fetch connections on mount
   const fetchConnections = useCallback(async () => {
     try {
-      const res = await fetch('/api/connections')
-      const data = await res.json()
+      const data = await api<Connection[]>('/connections')
       setConnections(data)
       if (data.length > 0) {
         setActiveConnectionId((prev) => prev || data[0].id)
@@ -70,8 +85,7 @@ function App() {
   // Fetch query history when connection changes
   const fetchHistory = useCallback(async (connectionId: string) => {
     try {
-      const res = await fetch(`/api/query-history/${connectionId}`)
-      const data = await res.json()
+      const data = await api<QueryHistoryItem[]>(`/query-history/${connectionId}`)
       setHistory(Array.isArray(data) ? data : [])
     } catch {
       setHistory([])
@@ -95,10 +109,9 @@ function App() {
 
       for (const table of tables) {
         try {
-          const res = await fetch(
-            `/api/discovery/${activeConnectionId}/datasets/${encodeURIComponent(datasetId)}/tables/${encodeURIComponent(table.id)}/columns`,
+          const columns = await api<ColumnInfo[]>(
+            `/discovery/${activeConnectionId}/datasets/${encodeURIComponent(datasetId)}/tables/${encodeURIComponent(table.id)}/columns`,
           )
-          const columns: ColumnInfo[] = await res.json()
           if (Array.isArray(columns)) {
             const colNames = columns.map((c) => c.name)
             newEntries[table.id] = colNames
@@ -126,12 +139,10 @@ function App() {
     const startTime = performance.now()
 
     try {
-      const response = await fetch('/api/query', {
+      const result = await api<QueryResult>('/query', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query, connection_id: activeConnectionId }),
       })
-      const result = await response.json()
       setResults(result)
 
       // If successful, refresh history from server (query is auto-saved by backend)
@@ -217,7 +228,7 @@ function App() {
   // Delete history item
   const handleDeleteHistory = useCallback(async (id: string) => {
     try {
-      await fetch(`/api/query-history/${id}`, { method: 'DELETE' })
+      await api(`/query-history/${id}`, { method: 'DELETE' })
       setHistory((prev) => prev.filter((h) => h.id !== id))
     } catch {
       // ignore
@@ -238,18 +249,15 @@ function App() {
   const handleSaveConnection = async (data: ConnectionFormData) => {
     try {
       if (editingConnection) {
-        await fetch(`/api/connections/${editingConnection.id}`, {
+        await api(`/connections/${editingConnection.id}`, {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
         })
       } else {
-        const res = await fetch('/api/connections', {
+        const created = await api<Connection>('/connections', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
         })
-        const created = await res.json()
         setActiveConnectionId(created.id)
       }
       setModalOpen(false)
@@ -261,7 +269,7 @@ function App() {
 
   const handleDeleteConnection = async (id: string) => {
     try {
-      await fetch(`/api/connections/${id}`, { method: 'DELETE' })
+      await api(`/connections/${id}`, { method: 'DELETE' })
       if (activeConnectionId === id) {
         setActiveConnectionId(null)
         setSchemaCache({})
@@ -270,6 +278,10 @@ function App() {
     } catch {
       // handle error
     }
+  }
+
+  if (!authenticated) {
+    return <LoginPage onLoginSuccess={() => setAuthenticated(true)} />
   }
 
   return (

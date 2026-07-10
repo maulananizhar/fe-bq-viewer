@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import type { Connection, DatasetInfo, TableInfo, QueryHistoryItem } from '../types'
+import { api } from '../utils/api'
 
 // Reusable dropdown menu for three-dot actions
 function DropdownMenu({ trigger, children }: { trigger: React.ReactNode; children: React.ReactNode }) {
@@ -158,8 +159,7 @@ function Sidebar({
     setExpandedDatasets(new Set())
     setDatasetTables({})
 
-    fetch(`/api/discovery/${activeConnectionId}/datasets`)
-      .then((res) => res.json())
+    api(`/discovery/${activeConnectionId}/datasets`)
       .then((data) => {
         setDatasets(Array.isArray(data) ? data : [])
       })
@@ -186,10 +186,9 @@ function Sidebar({
 
       setLoadingTables((prev) => ({ ...prev, [datasetId]: true }))
       try {
-        const res = await fetch(
-          `/api/discovery/${activeConnectionId}/datasets/${encodeURIComponent(datasetId)}/tables`,
+        const data = await api(
+          `/discovery/${activeConnectionId}/datasets/${encodeURIComponent(datasetId)}/tables`,
         )
-        const data = await res.json()
         const tables = Array.isArray(data) ? data : []
         setDatasetTables((prev) => ({ ...prev, [datasetId]: tables }))
         if (activeConn && tables.length > 0) {

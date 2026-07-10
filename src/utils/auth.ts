@@ -1,0 +1,20 @@
+// Token management for password-only authentication.
+// The token is stored in localStorage and sent as Bearer token to the API.
+
+const TOKEN_KEY = 'bq_viewer_auth_token';
+
+export function getToken(): string | null {
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+export function setToken(token: string): void {
+  localStorage.setItem(TOKEN_KEY, token);
+}
+
+export function clearToken(): void {
+  localStorage.removeItem(TOKEN_KEY);
+}
+
+export function isAuthenticated(): boolean {
+  return getToken() !== null;
+}
