@@ -20,6 +20,7 @@ COPY --from=build /app/dist /usr/share/nginx/html
 # Nginx config template + entrypoint
 COPY nginx.conf.template /etc/nginx/conf.d/default.conf.template
 COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
 # Configurable env vars (override at runtime via Coolify / docker -e)
 ENV NGINX_PORT=80 \
