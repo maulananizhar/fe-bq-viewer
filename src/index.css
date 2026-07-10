@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --gcp-blue: #1a73e8;
+  --gcp-blue-hover: #1557b0;
+  --gcp-bg: #f8f9fa;
+  --gcp-sidebar: #2d2d2d;
+  --gcp-header: #1a1a2e;
+}
+
+body {
+  margin: 0;
+  font-family: 'Google Sans', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: var(--gcp-bg);
+  color: #202124;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Custom scrollbar for the results table */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
