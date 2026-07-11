@@ -10,10 +10,13 @@ server {
     resolver 127.0.0.11 valid=10s;
 
     # Proxy API requests to the backend
-    # Using a variable defers DNS resolution to request time (not startup)
+    # NOTE: Jangan gunakan variable dengan full URL untuk proxy_pass.
+    # Hostname sslip.io dari Coolify mengandung segmen IP (cth: xxx.70.153.138.192.sslip.io)
+    # yang membuat Nginx URL parser error "invalid port in upstream" saat variable di-parse di runtime.
+    # Solusi: Gunakan literal ${BACKEND_HOST}:${BACKEND_PORT} langsung (di-substitusi oleh envsubst
+    # saat container start) — Nginx mem-parse URL sekali di startup, tidak di runtime.
     location /api/ {
-        set $backend_url "http://${BACKEND_HOST}:${BACKEND_PORT}";
-        proxy_pass $backend_url;
+        proxy_pass http://${BACKEND_HOST}:${BACKEND_PORT};
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
