@@ -31,6 +31,9 @@ COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
 # Configurable env vars (override at runtime via Coolify / docker -e)
+# BACKEND_URL  — full URL for separate deployment, e.g. "https://api.example.com"
+# BACKEND_HOST — Docker service name for compose, e.g. "backend" (default)
+# BACKEND_PORT — backend port, e.g. "5000" (default)
 ENV PORT=80 \
     BACKEND_HOST=backend \
     BACKEND_PORT=5000

@@ -7,13 +7,16 @@ name: bq-viewer
 # File ini menggunakan pre-built images dari Docker Hub — pastikan image
 # sudah ter-push via GitHub Actions sebelum deploy.
 #
-# Cara pakai di Coolify:
+# Cara pakai di Coolify (Docker Compose):
 #   1. New Resource → Docker Compose
 #   2. Pilih repo maulananizhar/fe-bq-viewer
 #   3. Build Pack: docker-compose
 #   4. Compose File: docker-compose.coolify.yml
 #   5. Set environment variables (DOCKER_USERNAME, MONGODB_URI, dll)
 #   6. Deploy!
+#
+# Untuk deployment terpisah (2 resource), gunakan BACKEND_URL di frontend:
+#   BACKEND_URL=https://<backend-domain>
 # =============================================================================
 
 services:
