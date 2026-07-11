@@ -22,20 +22,21 @@ function LoginPage({ onLoginSuccess }: LoginPageProps) {
 
     setLoading(true);
     try {
-      const result = await api<{ token?: string; error?: string }>(
-        "/auth/login",
-        {
-          method: "POST",
-          body: JSON.stringify({ password }),
-          noAuth: true,
-        },
-      );
+      const result = await api<{
+        token?: string;
+        error?: string;
+        message?: string;
+      }>("/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ password }),
+        noAuth: true,
+      });
 
       if (result.token) {
         setToken(result.token);
         onLoginSuccess();
       } else {
-        setError(result.message || result.error || "Invalid password");
+        setError(result.error || result.message || "Invalid password");
       }
     } catch {
       setError("Failed to connect to server. Please try again.");
