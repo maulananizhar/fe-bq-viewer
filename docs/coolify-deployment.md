@@ -7,7 +7,7 @@
 
 | Variable       | Wajib | Deskripsi               | Default   |
 | -------------- | ----- | ----------------------- | --------- |
-| `NGINX_PORT`   | ❌    | Port Nginx              | `80`      |
+| `PORT`         | ❌    | Port frontend server    | `80`      |
 | `BACKEND_HOST` | ✅    | Hostname/IP backend API | `backend` |
 | `BACKEND_PORT` | ❌    | Port backend API        | `5000`    |
 
@@ -22,6 +22,6 @@
 
 ## Catatan
 
-- Frontend adalah SPA statis yang di-serve Nginx
+- Frontend adalah SPA statis yang di-serve oleh Node.js (Express)
 - Semua request `/api/` diproxy ke `BACKEND_HOST:BACKEND_PORT`
 - Pastikan backend sudah deploy dan reachable dari frontend

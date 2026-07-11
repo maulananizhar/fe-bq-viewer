@@ -67,8 +67,8 @@ interface ApiOptions extends RequestInit {
  *   Contoh: fetch(`${BASE_URL}/health`) → http://host:5000/api/health
  *   Catatan: backend harus allow CORS origin frontend.
  *
- * - Dengan proxy (via nginx): tidak perlu set VITE_API_URL, fallback ke "/api"
- *   Contoh: fetch(`${BASE_URL}/health`) → /api/health → nginx → backend
+ * - Dengan proxy (via frontend server): tidak perlu set VITE_API_URL, fallback ke "/api"
+ *   Contoh: fetch(`${BASE_URL}/health`) → /api/health → frontend server proxy → backend
  */
 const BASE_URL = import.meta.env.VITE_API_URL || "/api";
 
