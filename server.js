@@ -36,6 +36,7 @@ app.use(
   createProxyMiddleware({
     target: backendTarget,
     changeOrigin: true,
+    pathRewrite: { "^/api": "" }, // Remove /api prefix before sending to backend
   }),
 );
 
