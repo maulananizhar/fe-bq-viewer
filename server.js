@@ -36,7 +36,7 @@ app.use(
   createProxyMiddleware({
     target: backendTarget,
     changeOrigin: true,
-    // Keep /api prefix — backend has global prefix "api" so endpoint is /api/health
+    pathRewrite: { "^/api": "" }, // Remove /api prefix before sending to backend
   }),
 );
 
