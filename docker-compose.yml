@@ -21,6 +21,7 @@ services:
       - NODE_ENV=production
       - MONGODB_URI=${MONGODB_URI}
       - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+      - AUTH_USERNAME=${AUTH_USERNAME}
       - AUTH_PASSWORD=${AUTH_PASSWORD}
     restart: unless-stopped
     networks:
